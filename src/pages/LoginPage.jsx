@@ -59,7 +59,7 @@ const LoginPage = () => {
               <path d="M16 7v10"></path>
             </svg>
           </div>
-          <h1>Soa Hackathon 2026</h1>
+          <h1>AIC-Soa Foundation</h1>
           <p>Attendance Authentication</p>
         </div>
 

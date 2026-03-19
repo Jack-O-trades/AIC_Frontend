@@ -64,7 +64,7 @@ export const checkinParticipant = async (uid) => {
   } catch (error) {
     console.error('Error confirming checkin:', error);
     if (error.response && error.response.data) {
-        return error.response.data;
+      return error.response.data;
     }
     return { status: 'error', message: 'Checkin Failed' };
   }

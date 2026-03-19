@@ -1,6 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import ParticlesBackground from '../components/ParticlesBackground';
 import StatCard from '../components/StatCard';
 import { getStats } from '../api/api';
 
@@ -8,9 +7,14 @@ const AdminPage = () => {
   const navigate = useNavigate();
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
+  
+  // Table State
+  const [searchTerm, setSearchTerm] = useState('');
+  const [actualSearch, setActualSearch] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 50;
 
   useEffect(() => {
-    // Basic Auth Check
     const token = localStorage.getItem('access_token');
     const role = localStorage.getItem('user_role');
     if (!token || role !== 'admin') {
@@ -42,70 +46,84 @@ const AdminPage = () => {
     navigate('/login');
   };
 
+  // Safe processing of members
+  const processedMembers = useMemo(() => {
+    const members = stats?.recent_checkins || [];
+    
+    // Filter
+    let filtered = members;
+    if (actualSearch) {
+      const lower = actualSearch.toLowerCase();
+      filtered = members.filter(m => 
+        (m.name?.toLowerCase().includes(lower)) ||
+        (m.email?.toLowerCase().includes(lower)) ||
+        (m.role?.toLowerCase().includes(lower))
+      );
+    }
+    return filtered;
+  }, [stats, actualSearch]);
+
+  const totalPages = Math.ceil(processedMembers.length / itemsPerPage);
+  const currentMembers = processedMembers.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
+
+  const handleSearchSubmit = (e) => {
+    e.preventDefault();
+    setActualSearch(searchTerm);
+    setCurrentPage(1);
+  };
+
   return (
     <>
-      <ParticlesBackground />
       <div className="container admin">
         <div className="header" style={{ position: 'relative' }}>
           <button
             onClick={handleLogout}
             style={{
-              position: 'absolute',
-              top: 0,
-              right: 0,
-              background: 'transparent',
-              border: '1px solid rgba(244, 67, 54, 0.4)',
-              color: '#ff7070',
-              padding: '0.4rem 0.8rem',
-              borderRadius: '20px',
-              cursor: 'pointer',
-              fontSize: '0.75rem'
+              position: 'absolute', top: 0, right: 0,
+              background: 'rgba(255, 67, 54, 0.1)', border: '1px solid rgba(255, 67, 54, 0.3)',
+              color: '#ff7070', padding: '0.4rem 0.8rem', borderRadius: '20px',
+              cursor: 'pointer', fontSize: '0.75rem', fontWeight: '600'
             }}
           >
             Logout
           </button>
 
-          <div className="header-badge">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ marginRight: '6px', verticalAlign: 'text-bottom' }}>
-              <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
-              <line x1="3" y1="9" x2="21" y2="9"></line>
-              <line x1="9" y1="21" x2="9" y2="9"></line>
-            </svg>
-            Admin Panel
-          </div>
-          <div className="logo" style={{ marginBottom: '1rem', display: 'flex', justifyContent: 'center' }}>
-            <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="#2563eb" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M3 7V5a2 2 0 0 1 2-2h2"></path>
-              <path d="M17 3h2a2 2 0 0 1 2 2v2"></path>
-              <path d="M21 17v2a2 2 0 0 1-2 2h-2"></path>
-              <path d="M7 21H5a2 2 0 0 1-2-2v-2"></path>
-              <path d="M8 7v10"></path>
-              <path d="M12 7v10"></path>
-              <path d="M16 7v10"></path>
-            </svg>
-          </div>
+          <div className="header-badge">Admin Control Panel</div>
           <h1>AIC-Soa Foundation</h1>
-          <p>Attendance Dashboard</p>
+          <p style={{ opacity: 0.7, fontSize: '0.9rem' }}>Real-time Statistics & Management</p>
         </div>
 
-        {/* Global Statistics */}
-        <div className="stats-container">
+        {/* Visibility Improved Stats */}
+        <div className="stats-container" style={{ marginBottom: '2.5rem' }}>
           <StatCard number={stats?.total_registrations || 0} label="Total Registered" id="statTotal" />
           <StatCard number={stats?.checked_in || 0} label="Checked In" id="statPresent" />
           <StatCard number={stats?.pending || 0} label="Pending" id="statAbsent" />
         </div>
 
-        {/* Recent Attendees Table */}
+        {/* Search Bar */}
+        <form className="search-container" onSubmit={handleSearchSubmit}>
+          <input 
+            type="text" 
+            placeholder="Search attendees..." 
+            className="search-input"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+          <button type="submit" className="search-button">Search</button>
+        </form>
+
         <div className="admin-card">
-          <div className="admin-title" style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#2563eb" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-              <polyline points="14 2 14 8 20 8"></polyline>
-              <line x1="16" y1="13" x2="8" y2="13"></line>
-              <line x1="16" y1="17" x2="8" y2="17"></line>
-              <polyline points="10 9 9 9 8 9"></polyline>
+          <div className="admin-title" style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '1.5rem' }}>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--accent-gold)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+              <circle cx="9" cy="7" r="4"></circle>
+              <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+              <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
             </svg>
-            <span>Recent Check-ins (Top 10)</span>
+            <span>Member Records ({processedMembers.length})</span>
           </div>
 
           <div className="admin-table-wrapper">
@@ -116,42 +134,31 @@ const AdminPage = () => {
                   <th>Name</th>
                   <th>Email</th>
                   <th>Role</th>
-                  <th>Checked in at</th>
+                  <th>Status</th>
                 </tr>
               </thead>
               <tbody>
-                {loading ? (
-                  <tr>
-                    <td colSpan="5" className="empty-row">
-                      Loading data...
-                    </td>
-                  </tr>
-                ) : !stats || !stats.recent_checkins || stats.recent_checkins.length === 0 ? (
-                  <tr>
-                    <td colSpan="5" className="empty-row">
-                      No recent check-ins found.
-                    </td>
-                  </tr>
+                {loading && processedMembers.length === 0 ? (
+                  <tr><td colSpan="5" className="empty-row">Loading data...</td></tr>
+                ) : processedMembers.length === 0 ? (
+                  <tr><td colSpan="5" className="empty-row">No records match your search.</td></tr>
                 ) : (
-                  stats.recent_checkins.map((attendee, index) => {
-                    const time = attendee.checkin_time
+                  currentMembers.map((attendee, index) => {
+                    const checkinTime = attendee.checkin_time
                       ? new Date(attendee.checkin_time).toLocaleString('en-US', {
-                        month: 'short',
-                        day: 'numeric',
-                        hour: '2-digit',
-                        minute: '2-digit'
-                      })
+                          month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit'
+                        })
                       : '—';
 
                     return (
                       <tr key={index}>
-                        <td>{index + 1}</td>
-                        <td style={{ fontWeight: 'bold' }}>{attendee.name}</td>
-                        <td>{attendee.email}</td>
-                        <td>
-                          <span className="badge badge-present">{attendee.role}</span>
+                        <td>{((currentPage - 1) * itemsPerPage) + index + 1}</td>
+                        <td style={{ fontWeight: '700' }}>{attendee.name}</td>
+                        <td style={{ fontSize: '0.85rem' }}>{attendee.email}</td>
+                        <td><span className="badge" style={{ background: 'rgba(0,180,216,0.1)', color: 'var(--accent-blue)', fontSize: '0.7rem' }}>{attendee.role}</span></td>
+                        <td style={{ fontSize: '0.8rem', color: attendee.checkin_time ? 'var(--accent-gold)' : 'rgba(255,255,255,0.4)' }}>
+                          {attendee.checkin_time ? `Checked in: ${checkinTime}` : 'Pending'}
                         </td>
-                        <td>{time}</td>
                       </tr>
                     );
                   })
@@ -159,6 +166,27 @@ const AdminPage = () => {
               </tbody>
             </table>
           </div>
+
+          {/* Pagination */}
+          {totalPages > 1 && (
+            <div className="pagination-container">
+              <button 
+                className="pagination-button" 
+                disabled={currentPage === 1}
+                onClick={() => setCurrentPage(p => p - 1)}
+              >
+                ←
+              </button>
+              <span className="pagination-info">Page {currentPage} of {totalPages}</span>
+              <button 
+                className="pagination-button" 
+                disabled={currentPage === totalPages}
+                onClick={() => setCurrentPage(p => p + 1)}
+              >
+                →
+              </button>
+            </div>
+          )}
         </div>
       </div>
     </>

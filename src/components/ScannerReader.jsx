@@ -90,25 +90,32 @@ const ScannerReader = forwardRef(({ onScanSuccess, onScanError }, ref) => {
           style={{
             position: 'absolute', top: 0, left: 0, right: 0, bottom: 0,
             display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
-            background: 'rgba(255,255,255,0.92)', borderRadius: '24px', zIndex: 10,
-            cursor: 'pointer'
+            background: 'var(--bg-primary)', borderRadius: '24px', zIndex: 10,
+            cursor: 'pointer',
+            border: '1px solid var(--border-color)'
           }}>
-          <div style={{ marginBottom: '1rem', display: 'flex', justifyContent: 'center' }}>
-            <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="#2563eb" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
-              <circle cx="12" cy="13" r="4"></circle>
-            </svg>
+          <div style={{ marginBottom: '1.5rem', display: 'flex', justifyContent: 'center' }}>
+            {/* Removed camera icon for a cleaner look */}
           </div>
-          <p style={{ color: '#0f172a', marginBottom: '1.5rem', textAlign: 'center', padding: '0 1.5rem', fontSize: '1.1rem', fontWeight: 'bold' }}>
-            {errorMsg || 'Click to begin scanning'}
+          <p style={{ color: 'var(--text-primary)', marginBottom: '2rem', textAlign: 'center', padding: '0 2rem', fontSize: '1.2rem', fontWeight: '800' }}>
+            {errorMsg || 'Ready to begin scanning'}
           </p>
           <button
             type="button"
             onClick={(e) => { e.stopPropagation(); startScanner(); }}
             style={{
-              padding: '0.85rem 2rem', background: '#2563eb', color: 'white',
-              border: 'none', borderRadius: '12px', fontWeight: 'bold',
-              fontSize: '1rem', cursor: 'pointer', boxShadow: '0 4px 15px rgba(37, 99, 235, 0.3)'
+              padding: '1rem 2.5rem', 
+              background: 'var(--accent-gold)', 
+              color: '#041c24',
+              border: 'none', 
+              borderRadius: '16px', 
+              fontWeight: '900',
+              fontSize: '1.1rem', 
+              cursor: 'pointer', 
+              boxShadow: '0 8px 20px var(--accent-gold-glow)',
+              textTransform: 'uppercase',
+              letterSpacing: '1px',
+              transition: 'all 0.3s ease'
             }}
           >
             Start Camera

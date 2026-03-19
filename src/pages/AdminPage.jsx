@@ -70,8 +70,14 @@ const AdminPage = () => {
   );
 
   const handleSearchSubmit = (e) => {
-    e.preventDefault();
+    if (e) e.preventDefault();
     setActualSearch(searchTerm);
+    setCurrentPage(1);
+  };
+
+  const handleClearSearch = () => {
+    setSearchTerm('');
+    setActualSearch('');
     setCurrentPage(1);
   };
 
@@ -104,16 +110,35 @@ const AdminPage = () => {
         </div>
 
         {/* Search Bar */}
-        <form className="search-container" onSubmit={handleSearchSubmit}>
-          <input 
-            type="text" 
-            placeholder="Search attendees..." 
-            className="search-input"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
-          <button type="submit" className="search-button">Search</button>
-        </form>
+        <div style={{ position: 'relative', marginBottom: '1.5rem' }}>
+          <form className="search-container" onSubmit={handleSearchSubmit} style={{ marginBottom: 0 }}>
+            <input 
+              type="text" 
+              placeholder="Search all checked-in participants..." 
+              className="search-input"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+            <button type="submit" className="search-button">Search</button>
+            {actualSearch && (
+              <button 
+                type="button" 
+                onClick={handleClearSearch}
+                style={{
+                  background: 'none', border: 'none', color: 'var(--accent-gold)',
+                  marginLeft: '1rem', cursor: 'pointer', fontSize: '0.8rem', textDecoration: 'underline'
+                }}
+              >
+                Clear
+              </button>
+            )}
+          </form>
+          {actualSearch && (
+            <p style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', marginTop: '0.5rem', marginLeft: '0.5rem' }}>
+              Showing results for: <strong>"{actualSearch}"</strong>
+            </p>
+          )}
+        </div>
 
         <div className="admin-card">
           <div className="admin-title" style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '1.5rem' }}>
@@ -123,7 +148,11 @@ const AdminPage = () => {
               <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
               <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
             </svg>
-            <span>Member Records ({processedMembers.length})</span>
+            <span>
+              {actualSearch 
+                ? `Search Results (${processedMembers.length})` 
+                : `Member Records (${stats?.total_registrations || 0})`}
+            </span>
           </div>
 
           <div className="admin-table-wrapper">

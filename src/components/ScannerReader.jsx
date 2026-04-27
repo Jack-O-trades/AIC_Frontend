@@ -104,14 +104,14 @@ const ScannerReader = forwardRef(({ onScanSuccess, onScanError }, ref) => {
             type="button"
             onClick={(e) => { e.stopPropagation(); startScanner(); }}
             style={{
-              padding: '1rem 2.5rem', 
-              background: 'var(--accent-gold)', 
+              padding: '1rem 2.5rem',
+              background: 'var(--accent-gold)',
               color: '#041c24',
-              border: 'none', 
-              borderRadius: '16px', 
+              border: 'none',
+              borderRadius: '16px',
               fontWeight: '900',
-              fontSize: '1.1rem', 
-              cursor: 'pointer', 
+              fontSize: '1.1rem',
+              cursor: 'pointer',
               boxShadow: '0 8px 20px var(--accent-gold-glow)',
               textTransform: 'uppercase',
               letterSpacing: '1px',

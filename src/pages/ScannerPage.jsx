@@ -24,12 +24,12 @@ const ScannerPage = () => {
     if (processing) return;
     if (status.state === 'idle' || status.state === 'error' || status.state === 'warning' || status.state === 'success') {
       if (scannerComponentRef.current) {
-         setStatus({ state: 'loading', text: 'Starting camera...' });
-         setShowDataCard(false);
-         setScannedData({ uid: '-', name: '-', college: '-', role: '-' });
-         setPendingCheckinUid(null);
-         scannerComponentRef.current.startScanner();
-         setStatus({ state: 'loading', text: 'Scanning...' });
+        setStatus({ state: 'loading', text: 'Starting camera...' });
+        setShowDataCard(false);
+        setScannedData({ uid: '-', name: '-', college: '-', role: '-' });
+        setPendingCheckinUid(null);
+        scannerComponentRef.current.startScanner();
+        setStatus({ state: 'loading', text: 'Scanning...' });
       }
     }
   };
@@ -72,7 +72,7 @@ const ScannerPage = () => {
       setPendingCheckinUid(uid);
 
     } catch (error) {
-       setStatus({ state: 'error', text: 'Verification failed (Server Error)' });
+      setStatus({ state: 'error', text: 'Verification failed (Server Error)' });
     }
     setProcessing(false);
   };
@@ -103,7 +103,7 @@ const ScannerPage = () => {
   return (
     <div className="container">
       <div className="header" style={{ position: 'relative' }}>
-        <button 
+        <button
           onClick={handleLogout}
           style={{
             position: 'absolute', top: 0, right: 0,
@@ -121,16 +121,16 @@ const ScannerPage = () => {
         <p style={{ opacity: 0.7 }}>Check-in & Attendance</p>
       </div>
 
-      <ScannerReader 
-        ref={scannerComponentRef} 
-        onScanSuccess={handleScanSuccess} 
-        onScanError={handleScanError} 
+      <ScannerReader
+        ref={scannerComponentRef}
+        onScanSuccess={handleScanSuccess}
+        onScanError={handleScanError}
       />
 
-      <StatusBadge 
-        status={status.state} 
-        text={status.text} 
-        onClick={handleStatusClick} 
+      <StatusBadge
+        status={status.state}
+        text={status.text}
+        onClick={handleStatusClick}
       />
 
       <div className={`admin-card ${showDataCard ? 'visible' : ''}`} style={{ marginTop: '1.5rem', display: showDataCard ? 'block' : 'none' }}>
@@ -147,11 +147,11 @@ const ScannerPage = () => {
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
           <div className="data-field">
             <div className="data-label">Role</div>
-            <div className="data-value" style={{ fontSize: '1rem'}}>{scannedData.role}</div>
+            <div className="data-value" style={{ fontSize: '1rem' }}>{scannedData.role}</div>
           </div>
           <div className="data-field">
             <div className="data-label">College</div>
-            <div className="data-value" style={{ fontSize: '1rem'}}>{scannedData.college}</div>
+            <div className="data-value" style={{ fontSize: '1rem' }}>{scannedData.college}</div>
           </div>
         </div>
 

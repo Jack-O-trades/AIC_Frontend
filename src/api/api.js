@@ -59,6 +59,16 @@ export const scanParticipant = async (uid) => {
   }
 };
 
+export const updateParticipant = async (uid, fields) => {
+  try {
+    const response = await apiClient.patch(`/participant/${uid}`, fields);
+    return response.data;
+  } catch (error) {
+    console.error('Error updating participant:', error);
+    throw error;
+  }
+};
+
 export const checkinParticipant = async (uid) => {
   try {
     const response = await apiClient.post('/checkin', { uid });
